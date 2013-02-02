@@ -1,3 +1,71 @@
+enyo.kind({
+	name: "App",
+	kind: "FittableRows",
+	fit: true,
+	components:[
+		{kind: "onyx.Toolbar", content: "bobAT"},
+		{kind: "Signals", ondeviceready: "deviceready"},
+		{kind: "enyo.Scroller", fit: true, components: [
+			{kind: "onyx.InputDecorator", components: [
+				{ name: "phoneNmbr", kind: "onyx.Input", value: '', placeholder: "Phone number", onchange: "numberChanged"}
+			]},
+			{kind: "onyx.InputDecorator", components: [
+				{ name: "pwd", kind: "onyx.Input", value: '', placeholder: "Password", type: 'password', onkeydown: "searchOnEnter", onchange: "pwdChanged"}
+			]},
+			{name: "response", content: "", style: "padding: 8px;"}
+		]},
+		{kind: "onyx.Toolbar", components: [
+			{kind: "onyx.Button", content: "Log in", ontap: "login"}
+		]}
+	],
+	deviceReady: function() {
+		// respond to deviceready event
+		enyo.log('ready');
+	},
+	login: function(inSender, inEvent) {
+		var number = this.$.phoneNmbr.getValue();
+		var pwd = Base64.encode(this.$.pwd.getValue());
+
+		var data = JSON.parse('{\"id\":\"' + number + '\",\"pwd\":\"' + pwd + '\"}');
+		var stringData = JSON.stringify(data);
+
+		var request = new enyo.Ajax({
+			url: "https://fuelaustria.eu01.aws.af.cm/bobAT/",
+			method: "POST",
+			contentType: "raw",
+			handleAs: "text", //options are "json", "text", or "xml"
+			postBody: stringData
+		});
+		
+
+		request.response(this, function(inSender, inResponse) {
+			this.$.response.setContent(inResponse);
+		});
+		
+
+		//request.setPostBody(stringData);
+		request.go();
+		
+	},
+	searchOnEnter: function(inSender, inEvent) {
+		if (inEvent.keyCode === 13) {
+			this.login();
+			return true;
+		}
+	}
+});
+
+/*enyo.kind({
+	name: "App",
+	kind: "Panels",
+	fit: true,
+	components: [
+		{name: "MyStartPanel"},
+		{name: "MyMiddlePanel"},
+		{name: "MyLastPanel"}
+	]
+});*/
+
 var Base64 = {
 	// private property
 	_keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
@@ -130,72 +198,3 @@ var Base64 = {
 		return string;
 	}
 };
-
-
-enyo.kind({
-	name: "App",
-	kind: "FittableRows",
-	fit: true,
-	components:[
-		{kind: "onyx.Toolbar", content: "bobAT"},
-		{kind: "Signals", ondeviceready: "deviceready"},
-		{kind: "enyo.Scroller", fit: true, components: [
-			{kind: "onyx.InputDecorator", components: [
-				{ name: "phoneNmbr", kind: "onyx.Input", value: '', placeholder: "Phone number", onchange: "numberChanged"}
-			]},
-			{kind: "onyx.InputDecorator", components: [
-				{ name: "pwd", kind: "onyx.Input", value: '', placeholder: "Password", type: 'password', onkeydown: "searchOnEnter", onchange: "pwdChanged"}
-			]},
-			{name: "response", content: "", style: "padding: 8px;"}
-		]},
-		{kind: "onyx.Toolbar", components: [
-			{kind: "onyx.Button", content: "Log in", ontap: "login"}
-		]}
-	],
-	deviceReady: function() {
-		// respond to deviceready event
-		this.getToday();
-	},
-	login: function(inSender, inEvent) {
-		var number = this.$.phoneNmbr.getValue();
-		var pwd = Base64.encode(this.$.pwd.getValue());
-
-		var data = JSON.parse('{\"id\":\"' + number + '\",\"pwd\":\"' + pwd + '\"}');
-		var stringData = JSON.stringify(data);
-
-		var request = new enyo.Ajax({
-			url: "https://fuelaustria.eu01.aws.af.cm/bobAT/",
-			method: "POST",
-			contentType: "raw",
-			handleAs: "text", //options are "json", "text", or "xml"
-			postBody: stringData
-		});
-		
-
-		request.response(this, function(inSender, inResponse) {
-			this.$.response.setContent(inResponse);
-		});
-		
-
-		//request.setPostBody(stringData);
-		request.go();
-		
-	},
-	searchOnEnter: function(inSender, inEvent) {
-		if (inEvent.keyCode === 13) {
-			this.login();
-			return true;
-		}
-	}
-});
-
-/*enyo.kind({
-	name: "App",
-	kind: "Panels",
-	fit: true,
-	components: [
-		{name: "MyStartPanel"},
-		{name: "MyMiddlePanel"},
-		{name: "MyLastPanel"}
-	]
-});*/

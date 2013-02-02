@@ -1,6 +1,5 @@
-bootplate
+bobAT
 =========
 
-Application template for packaged Enyo
-
-Refer to the [Wiki](https://github.com/enyojs/enyo/wiki/Bootplate) for how to get started.
+Mobile client for bob.at using EnyoJS.
+Serverside implementation parsing the webpabe with nodejs.
