@@ -1,0 +1,10 @@
+{
+	"id": "com.imperialcoder.bobat",
+	"version": "0.0.1",
+	"vendor": "imperialcoder",
+	"type": "web",
+	"main": "index.html",
+	"title": "bobAT",
+	"icon": "icon.png",
+	"uiRevision": 2
+}
