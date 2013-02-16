@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <widget xmlns = "http://www.w3.org/ns/widgets"
+        xmlns:gap = "http://phonegap.com/ns/1.0"
+        id        = "com.imperialcoder.bobAT"
+        versionCode="10" 
+        version   = "0.0.2">
+
+    <!-- versionCode is optional and Android only -->
+
+    <name>bobAT</name>
+
+    <description>
+        bob.at by imperialcoder
+    </description>
+
+    <author href="http://imperialcoder.com" email="webos@imperialcoder.com">
+        Imperialcoder - coding for the realm
+    </author>
+
+</widget>
