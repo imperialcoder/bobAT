@@ -35,15 +35,12 @@ enyo.kind({
 			contentType: "raw",
 			handleAs: "text", //options are "json", "text", or "xml"
 			postBody: stringData
-		});
-		
-
-		request.response(this, function(inSender, inResponse) {
+		}).error(this, function(inSender, inError) {
+			this.$.response.setContent(inError);
+		}).response(this, function(inSender, inResponse) {
 			this.$.response.setContent(inResponse);
 		});
 		
-
-		//request.setPostBody(stringData);
 		request.go();
 		
 	},
