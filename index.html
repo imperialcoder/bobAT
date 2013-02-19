@@ -8,9 +8,6 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf8"/>
 		<meta name="apple-mobile-web-app-capable" content="yes"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, height=device-height"/>
-        <!-- webos specific -->
-        <script src="lib/webOS/cordova.webos.js"></script>
-        <script src="lib/webOS/symenyo2.js"></script>
 		<!-- css -->
 		<link href="build/enyo.css" rel="stylesheet"/>
 		<link href="build/app.css" rel="stylesheet"/>
@@ -20,11 +17,12 @@
 	</head>
 	<body class="enyo-unselectable">
 		<script>
-			if (!window.App) {
-				alert('No application build found, redirecting to debug.html.');
-				location = 'debug.html';
-			}
-			new App().renderInto(document.body);
+			// if (!window.App) {
+			// 	alert('No application build found, redirecting to debug.html.');
+			// 	location = 'debug.html';
+			// }
+			//new App().renderInto(document.body);
+			new App().write();
 		</script>
 	</body>
 </html>
