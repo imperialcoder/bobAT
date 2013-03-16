@@ -17,12 +17,11 @@
 	</head>
 	<body class="enyo-unselectable">
 		<script>
-			// if (!window.App) {
-			// 	alert('No application build found, redirecting to debug.html.');
-			// 	location = 'debug.html';
-			// }
-			//new App().renderInto(document.body);
-			new App().write();
+			if (!window.bobAT) {
+				alert('No application build found, redirecting to debug.html.');
+				location = 'debug.html';
+			}
+			new bobAT().renderInto(document.body);
 		</script>
 	</body>
 </html>

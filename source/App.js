@@ -1,30 +1,85 @@
 enyo.kind({
-	name: "App",
-	kind: "FittableRows",
+	name: "bobAT",
+	kind: enyo.FittableRows,
+	classes: "onyx enyo",
 	fit: true,
 	components:[
-		{kind: "onyx.Toolbar", content: "bobAT"},
-		{kind: "Signals", ondeviceready: "deviceready"},
-		{kind: "enyo.Scroller", fit: true, components: [
-			{kind: "onyx.InputDecorator", components: [
-				{ name: "phoneNmbr", kind: "onyx.Input", value: '', placeholder: "Phone number", onchange: "numberChanged"}
-			]},
-			{kind: "onyx.InputDecorator", components: [
-				{ name: "pwd", kind: "onyx.Input", value: '', placeholder: "Password", type: 'password', onkeydown: "searchOnEnter", onchange: "pwdChanged"}
-			]},
-			{name: "response", content: "", style: "padding: 8px;"}
+		{kind: "onyx.Toolbar", //style: "text-align: center;", layoutKind: "FittableColumnsLayout",
+		components: [
+			//{kind: "Group", components: [
+				{ kind: "onyx.Button", style: "height: 45px", name:"prefsButton", ontap:"showSettings", components: [ {kind: "onyx.Icon", src: "assets/settings.png"} ]},
+				{ kind: "Image", src: "assets/toolbar-logo-45.png" },
+				{ kind: "onyx.IconButton", src: "assets/toolbar-icon-sync.png", ontap: "load" }
+			//]}
 		]},
-		{kind: "onyx.Toolbar", components: [
-			{kind: "onyx.Button", content: "Log in", ontap: "login"}
+		{kind: "Signals", ondeviceready: "deviceready"},
+		{kind: "enyo.Scroller", fit: true, classes: "bobat", components: [
+			{
+				name: "loading",
+				classes: "onyx-scrim enyo-fit onyx-scrim-translucent",
+				kind: "onyx.Popup",
+				centered: true,
+				modal: true,
+				floating: true,
+				scrim: true,
+				scrimWhenModal: true,
+				autoDismiss: false,
+				style: "background: #eee;color: black;",
+				components: [
+					{kind: "onyx.Spinner", classes: "onyx-light"}
+				]
+			},
+			{
+				name: "settingsPopup",
+				classes: "onyx-scrim enyo-fit onyx-scrim-translucent",
+				kind: "onyx.Popup",
+				centered: true,
+				modal: true,
+				floating: true,
+				//scrim: true,
+				//scrimWhenModal: true,
+				autoDismiss: false,
+				// onShow: "popupShown",
+				// onHide: "popupHidden",
+				components: [
+					{kind: "onyx.InputDecorator", style: "background-color: #ffffff", components: [
+						{ name: "phoneNmbr", kind: "onyx.Input", value: '', placeholder: "Phone number", onchange: "numberChanged"}
+					]},
+					{kind: "onyx.InputDecorator", style: "background-color: #ffffff", components: [
+						{ name: "pwd", kind: "onyx.Input", value: '', placeholder: "Password", type: 'password', onkeydown: "searchOnEnter"/*, onchange: "pwdChanged"*/}
+					]},
+					{tag: "br"},
+					{kind: "onyx.Button", content: "Close", ontap: "closeSettingsPopup"},
+					{kind: "onyx.Button", content: "Save", ontap: "saveAndCloseSettingsPopup"}
+				]
+			},
+			{kind: "onyx.Groupbox", showing: false, classes: "bobat-groupbox", name: "costManagerContainer", components: [
+				{kind: "onyx.GroupboxHeader", content: "Cost manager"}
+			]},			
+			{ tag: "br" },
+			{kind: "onyx.Groupbox", showing: false, classes: "bobat-groupbox", name: "clientInfoContainer", components: [
+				{kind: "onyx.GroupboxHeader", content: "Client info"}
+			]},
+			{name: "error", allowHtml: true, content: "", style: "padding: 8px;"}
 		]}
 	],
 	deviceReady: function() {
 		// respond to deviceready event
 		enyo.log('ready');
 	},
-	login: function(inSender, inEvent) {
-		var number = this.$.phoneNmbr.getValue();
-		var pwd = Base64.encode(this.$.pwd.getValue());
+	rendered: function() {
+		this.inherited(arguments);
+
+		if(this.getNumber() && this.getPwd()) {
+			this.load();
+		} else {
+			this.showSettings();
+		}
+	},
+	load: function(inSender, inEvent) {
+		this.$.loading.show();
+		var number = this.getNumber();
+		var pwd = this.getPwd();
 
 		var data = JSON.parse('{\"id\":\"' + number + '\",\"pwd\":\"' + pwd + '\"}');
 		var stringData = JSON.stringify(data);
@@ -32,24 +87,87 @@ enyo.kind({
 		var request = new enyo.Ajax({
 			url: "https://fuelaustria.eu01.aws.af.cm/bobAT/",
 			method: "POST",
+			timeout: 10000,
 			contentType: "raw",
-			handleAs: "text", //options are "json", "text", or "xml"
+			handleAs: "json", //options are "json", "text", or "xml"
 			postBody: stringData
-		}).error(this, function(inSender, inError) {
-			this.$.response.setContent(inError);
-		}).response(this, function(inSender, inResponse) {
-			this.$.response.setContent(inResponse);
 		});
-		
+
+		request.error(this, this.dataError);
+		request.response(this, this.dataResponse);
+
 		request.go();
-		
+
+	},
+	dataResponse: function (inSender, inResponse) {
+		//iterate over client info
+		var clientInfo = inResponse.data.clientInfo;
+		var costManager = inResponse.data.costManager;
+
+		this.$.clientInfoContainer.destroyComponents();
+		this.$.costManagerContainer.destroyComponents();
+
+		for(var key in clientInfo){
+			var attrName = key;
+			var attrValue = clientInfo[key];
+			this.$.clientInfoContainer.createComponent({ kind: "BobatRow", label: attrName, field: attrValue });
+		}
+
+		for(var key in costManager){
+			var attrName = key;
+			var attrValue = costManager[key];
+			this.$.costManagerContainer.createComponent({ kind: "BobatRow", label: attrName, field: attrValue });
+		}
+
+		this.$.costManagerContainer.setShowing(true);
+		this.$.clientInfoContainer.setShowing(true);
+
+		this.$.clientInfoContainer.render();
+		this.$.costManagerContainer.render();
+
+		this.$.loading.hide();
+	},
+	dataError: function (inSender, inError) {
+		this.$.error.setContent('Error ' + inError + ', ' + inSender.xhrResponse.body);
+		this.$.loading.hide();
+	},
+	showSettings: function(inSender, inEvent) {
+		var number = this.getNumber();
+		var pwd = this.getPwd();
+
+		this.$.phoneNmbr.setValue(number);
+		this.$.pwd.setValue(Base64.decode(pwd));
+
+		this.$.settingsPopup.show();
+	},
+	closeSettingsPopup: function(inSender, inEvent) {
+		this.$.settingsPopup.hide();
+	},
+	saveAndCloseSettingsPopup: function (inSender, inEvent) {
+		var number = this.$.phoneNmbr.getValue();
+		var pwd = Base64.encode(this.$.pwd.getValue());
+
+		localStorage.setItem('bobAT_number', number);
+		localStorage.setItem('bobAT_pwd', pwd);
+
+		this.$.phoneNmbr.setValue('');
+		this.$.pwd.setValue('');
+
+		this.$.settingsPopup.hide();
+		this.load();
+	},
+	getNumber: function() {
+		return localStorage.getItem('bobAT_number');
+	},
+	getPwd: function() {
+		return localStorage.getItem('bobAT_pwd');
 	},
 	searchOnEnter: function(inSender, inEvent) {
 		if (inEvent.keyCode === 13) {
-			this.login();
+			this.saveAndCloseSettingsPopup();
 			return true;
 		}
-	}
+	},
 });
 
 /*enyo.kind({
@@ -61,7 +179,18 @@ enyo.kind({
 		{name: "MyMiddlePanel"},
 		{name: "MyLastPanel"}
 	]
-});*/
+});
+searchOnEnter: function(inSender, inEvent) {
+		if (inEvent.keyCode === 13) {
+			this.load();
+			return true;
+		}
+	},
+	
+
+*/
+
+
 
 var Base64 = {
 	// private property

@@ -2,6 +2,27 @@
 	Put anything you reference with "url()" in ../assets/
 	This way, you can minify your application, and just remove the "source" folder for production
 */
-.nice-padding {
-	padding: 15px;
+
+.bobat {
+	background: url(../assets/bg.png);
+}
+
+body {
+	font-family: 'Open Sans', sans-serif !important;
+}
+
+.bobat-groupbox {
+	padding: 8px;
+}
+
+.row-label {
+	margin: 4px;
+	padding: 4px;
+	color: #A8A8A8;
+}
+
+.row-field {
+	text-align: right;
+	padding: 8px;
+	color: #FFFFFF;
 }
