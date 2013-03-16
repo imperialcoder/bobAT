@@ -232,6 +232,10 @@ var Base64 = {
 
 	// public method for decoding
 	decode : function (input) {
+		if(!input) {
+			return '';
+		}
+		
 		var output = "";
 		var chr1, chr2, chr3;
 		var enc1, enc2, enc3, enc4;
