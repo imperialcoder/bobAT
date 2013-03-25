@@ -1,7 +1,7 @@
 enyo.kind({
 	name: "bobAT",
 	kind: enyo.FittableRows,
-	classes: "onyx enyo",
+	classes: "onyx enyo bobat",
 	fit: true,
 	components:[
 		{kind: "onyx.Toolbar", //style: "text-align: center;", layoutKind: "FittableColumnsLayout",
@@ -65,13 +65,16 @@ enyo.kind({
 	],
 	deviceReady: function() {
 		// respond to deviceready event
+		enyo.log('deviceready');
+		navigator.splashscreen.hide();
+    	enyo.dispatcher.listen(document, "backbutton");
 		enyo.log('ready');
 	},
 	rendered: function() {
 		this.inherited(arguments);
 
 		if(this.getNumber() && this.getPwd()) {
-			this.load();
+			enyo.asyncMethod(this, "load", "load data");
 		} else {
 			this.showSettings();
 		}
@@ -109,7 +112,7 @@ enyo.kind({
 
 		for(var key in clientInfo){
 			var attrName = key;
-			var attrValue = clientInfo[key];
+			var attrValue = clientInfo[key];//.split('  ');
 			this.$.clientInfoContainer.createComponent({ kind: "BobatRow", label: attrName, field: attrValue });
 		}
 
@@ -128,7 +131,7 @@ enyo.kind({
 		this.$.loading.hide();
 	},
 	dataError: function (inSender, inError) {
-		this.$.error.setContent('Error ' + inError + ', ' + inSender.xhrResponse.body);
+		this.$.error.setContent('Error ' + inError + ', ' + inSender.xhrResponse != null ? inSender.xhrResponse.body : '');
 		this.$.loading.hide();
 	},
 	showSettings: function(inSender, inEvent) {
@@ -235,7 +238,7 @@ var Base64 = {
 		if(!input) {
 			return '';
 		}
-		
+
 		var output = "";
 		var chr1, chr2, chr3;
 		var enc1, enc2, enc3, enc4;

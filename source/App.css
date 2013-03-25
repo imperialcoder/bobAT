@@ -3,12 +3,19 @@
 	This way, you can minify your application, and just remove the "source" folder for production
 */
 
-.bobat {
-	background: url(../assets/bg.png);
+@font-face
+{
+	font-family: OpenSans;
+	src: url('../assets/fonts/Open_Sans/OpenSans-Regular.ttf');
 }
 
 body {
-	font-family: 'Open Sans', sans-serif !important;
+	font-family: OpenSans sans-serif !important;
+}
+
+.bobat {
+	background: url(../assets/bg.png);
+	font-family: OpenSans, sans-serif !important;
 }
 
 .bobat-groupbox {

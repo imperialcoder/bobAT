@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<!--<script src="lib/webOS/cordova.webos.js"></script>
+		<script src="lib/webOS/symenyo2.js"></script> -->
+		<script src="phonegap.js"/>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<title>bobAT</title>
 		<link rel="shortcut icon" href="assets/favicon.ico"/>
@@ -17,10 +20,17 @@
 	</head>
 	<body class="enyo-unselectable">
 		<script>
-			if (!window.bobAT) {
-				alert('No application build found, redirecting to debug.html.');
-				location = 'debug.html';
+			 if (!window.bobAT) {
+			 	alert('No application build found, redirecting to debug.html.');
+			 	location = 'debug.html';
+			 }
+			 
+			if(enyo.platform.webos) {
+				window.PalmSystem.stageReady();
 			}
+
+			enyo.dispatcher.listen(document, "deviceready");
+			
 			new bobAT().renderInto(document.body);
 		</script>
 	</body>
