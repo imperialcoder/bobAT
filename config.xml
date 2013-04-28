@@ -19,6 +19,7 @@
 
     <icon src="assets/crossplatform/icon_200.png" width="200" height="200" />
     <icon src="assets/crossplatform/icon_72.png" width="72" height="72" />
+    <icon src="assets/crossplatform/icon_64.png" width="64" height="64" />
     <icon src="assets/crossplatform/icon_48.png" width="48" height="48" />
     <icon src="assets/crossplatform/icon_36.png" width="36" height="36" />
     <preference name="permissions" value="none"/>
